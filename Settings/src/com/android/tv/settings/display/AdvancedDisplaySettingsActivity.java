@@ -1,248 +1,217 @@
-/**
- *
- */
 package com.android.tv.settings.display;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import android.util.Log;
-import android.view.KeyEvent;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.SimpleAdapter.ViewBinder;
-import android.R.integer;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
-import com.android.tv.settings.BaseInputActivity;
+import androidx.appcompat.widget.AppCompatSeekBar;
+import androidx.fragment.app.FragmentActivity;
+
 import com.android.tv.settings.R;
 import com.android.tv.settings.data.ConstData;
-import com.android.tv.settings.util.JniCall;
 import com.android.tv.settings.util.ReflectUtils;
 
-import android.os.SystemProperties;
-import android.view.View;
-import android.os.Bundle;
-
-/**
- * @author GaoFei
- */
-public class AdvancedDisplaySettingsActivity extends BaseInputActivity
-        implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
+public class AdvancedDisplaySettingsActivity extends FragmentActivity implements View.OnClickListener {
     private static final String TAG = "AdvancedDisplaySettingsActivity";
-    private int mOldBcshBrightness;
-    private int mOldBcshContrast;
-    private int mOldBcshStauration;
-    private int mOldBcshTone;
-    private String mStrPlatform;
-    private boolean mIsSupportDRM;
-    private boolean isFirstIn = true;
-    /**
-     * BCSH亮度
-     */
-    private SeekBar mSeekBarBcshBrightness;
-    /**
-     * BCSH对比度
-     */
-    private SeekBar mSeekBarBcshContrast;
-    /**
-     * BCSH饱和度
-     */
-    private SeekBar mSeekBarBcshSaturation;
-    /**
-     * BCSH色调
-     */
-    private SeekBar mSeekBarBcshTone;
-    /**
-     * BCSH亮度值
-     */
-    private TextView mTextBcshBrightnessNum;
-    /**
-     * BCSH对比度值
-     */
-    private TextView mTextBcshContrastNum;
-    /**
-     * BCSH饱和度值
-     */
-    private TextView mTextBcshStaurationNum;
-    /**
-     * BCSH色调值
-     */
-    private TextView mTextBcshToneNum;
-    /**
-     * 确定按钮
-     */
-    private Button mBtnOK;
-    /**
-     * 取消按钮
-     */
-    private Button mBtnCancel;
-    private Button mBtnReset;
-    private Button mBtnCold;
-    private Button mBtnWarm;
-    private Button mBtnSharp;
 
-    /**
-     * 最大亮度
-     */
-    private double mMaxBrightness;
-    /**
-     * 最小亮度
-     */
-    private double mMinBrightness;
-    /**
-     * 亮度数值
-     */
-    private double mBrightnessNum;
-    /**
-     * 饱和度数值
-     */
-    private double mSaturationNum;
-    /**
-     * 显示ID
-     */
-    private int mDisplayId;
-    /**
-     * DRM显示管理
-     */
+    private static final int DEFAULT_VALUE = 50;
+    private static final int RESET_VALUE = 50;
+    private static final int COLD_BRIGHTNESS = 50;
+    private static final int COLD_CONTRAST = 50;
+    private static final int COLD_SATURATION = 30;
+    private static final int COLD_TONE = 31;
+    private static final int WARM_BRIGHTNESS = 67;
+    private static final int WARM_CONTRAST = 53;
+    private static final int WARM_SATURATION = 80;
+    private static final int WARM_TONE = 74;
+    private static final int SHARP_BRIGHTNESS = 60;
+    private static final int SHARP_CONTRAST = 77;
+    private static final int SHARP_SATURATION = 43;
+    private static final int SHARP_TONE = 46;
+
     private Object mRkDisplayManager;
+    private int mDisplayId;
+
+    private AppCompatSeekBar mBrightnessSeekBar;
+    private AppCompatSeekBar mContrastSeekBar;
+    private AppCompatSeekBar mSaturationSeekBar;
+    private AppCompatSeekBar mToneSeekBar;
+    private TextView mBrightnessValue;
+    private TextView mContrastValue;
+    private TextView mSaturationValue;
+    private TextView mToneValue;
+    private View mBrightnessRow;
+    private View mContrastRow;
+    private View mSaturationRow;
+    private View mToneRow;
+
+    private int mOldBcshBrightness = DEFAULT_VALUE;
+    private int mOldBcshContrast = DEFAULT_VALUE;
+    private int mOldBcshSaturation = DEFAULT_VALUE;
+    private int mOldBcshTone = DEFAULT_VALUE;
+
+    private boolean mSuppressCallbacks;
 
     @Override
-    public void init() {
-        mStrPlatform = SystemProperties.get("ro.board.platform");
-        mIsSupportDRM = true;// !SystemProperties.getBoolean("ro.rk.displayd.enable", true);
-        try {
-            if (mIsSupportDRM)
-                mRkDisplayManager = Class.forName("android.os.RkDisplayOutputManager").newInstance();
-        } catch (Exception e) {
-            // no hnadle
-        }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_advanced_display);
         mDisplayId = getIntent().getIntExtra(ConstData.IntentKey.DISPLAY_ID, 0);
-        mSeekBarBcshBrightness = (SeekBar) findViewById(R.id.brightness);
-        mSeekBarBcshContrast = (SeekBar) findViewById(R.id.contrast);
-        mSeekBarBcshSaturation = (SeekBar) findViewById(R.id.saturation);
-        mSeekBarBcshTone = (SeekBar) findViewById(R.id.tone);
-        mTextBcshBrightnessNum = (TextView) findViewById(R.id.text_bcsh_brightness_num);
-        mTextBcshContrastNum = (TextView) findViewById(R.id.text_bcsh_contrast_num);
-        mTextBcshStaurationNum = (TextView) findViewById(R.id.text_bcsh_saturation_num);
-        mTextBcshToneNum = (TextView) findViewById(R.id.text_bcsh_tone_num);
-        mBtnOK = (Button) findViewById(R.id.btn_ok);
-        mBtnCancel = (Button) findViewById(R.id.btn_cancel);
-        mBtnReset = (Button) findViewById(R.id.btn_reset);
-        mBtnCold = (Button) findViewById(R.id.btn_cold);
-        mBtnWarm = (Button) findViewById(R.id.btn_warm);
-        mBtnSharp = (Button) findViewById(R.id.btn_sharp);
-
-        mBtnOK.setOnClickListener(this);
-        mBtnCancel.setOnClickListener(this);
-        mBtnReset.setOnClickListener(this);
-        mBtnCold.setOnClickListener(this);
-        mBtnWarm.setOnClickListener(this);
-        mBtnSharp.setOnClickListener(this);
-
-        SharedPreferences bcshPreferences = getSharedPreferences(ConstData.SharedKey.BCSH_VALUES, Context.MODE_PRIVATE);
-        if (!mIsSupportDRM) {
-            mSeekBarBcshContrast.setKeyProgressIncrement(20);
-            mSeekBarBcshSaturation.setKeyProgressIncrement(20);
-            mOldBcshBrightness = bcshPreferences.getInt(ConstData.SharedKey.BCSH_BRIGHTNESS, 32);
-            mOldBcshContrast = bcshPreferences.getInt(ConstData.SharedKey.BCSH_CONTRAST, 1000);
-            mOldBcshStauration = bcshPreferences.getInt(ConstData.SharedKey.BCSH_STAURATION, 1000);
-            mOldBcshTone = bcshPreferences.getInt(ConstData.SharedKey.BCSH_TONE, 30);
-        } else {
-            mSeekBarBcshBrightness.setMax(100);
-            mSeekBarBcshContrast.setMax(100);
-            mSeekBarBcshSaturation.setMax(100);
-            mSeekBarBcshTone.setMax(100);
-            mSeekBarBcshBrightness.setKeyProgressIncrement(1);
-            mSeekBarBcshContrast.setKeyProgressIncrement(1);
-            mSeekBarBcshSaturation.setKeyProgressIncrement(1);
-            mSeekBarBcshTone.setKeyProgressIncrement(1);
-            mOldBcshBrightness = (Integer) ReflectUtils.invokeMethod(mRkDisplayManager, "getBrightness",
-                    new Class[] { int.class }, new Object[] { mDisplayId });
-            mOldBcshContrast = (Integer) ReflectUtils.invokeMethod(mRkDisplayManager, "getContrast",
-                    new Class[] { int.class }, new Object[] { mDisplayId });
-            mOldBcshStauration = (Integer) ReflectUtils.invokeMethod(mRkDisplayManager, "getSaturation",
-                    new Class[] { int.class }, new Object[] { mDisplayId });
-            mOldBcshTone = (Integer) ReflectUtils.invokeMethod(mRkDisplayManager, "getHue", new Class[] { int.class },
-                    new Object[] { mDisplayId });
+        try {
+            mRkDisplayManager = Class.forName("android.os.RkDisplayOutputManager").newInstance();
+        } catch (Exception e) {
+            Log.e(TAG, "RkDisplayOutputManager is not available", e);
         }
-        mSeekBarBcshBrightness.setOnSeekBarChangeListener(this);
-        mSeekBarBcshContrast.setOnSeekBarChangeListener(this);
-        mSeekBarBcshSaturation.setOnSeekBarChangeListener(this);
-        mSeekBarBcshTone.setOnSeekBarChangeListener(this);
-        mSeekBarBcshBrightness.setProgress(mOldBcshBrightness);
-        mSeekBarBcshContrast.setProgress(mOldBcshContrast);
-        mSeekBarBcshSaturation.setProgress(mOldBcshStauration);
-        mSeekBarBcshTone.setProgress(mOldBcshTone);
-        updateBcshValue();
+        initViews();
+        loadCurrentValues();
+        updateValueLabels();
     }
 
-    @Override
-    public int getContentLayoutRes() {
-        return R.layout.activity_advanced_display_settings;
-    }
+    private void initViews() {
+        mBrightnessSeekBar = findViewById(R.id.brightness);
+        mContrastSeekBar = findViewById(R.id.contrast);
+        mSaturationSeekBar = findViewById(R.id.saturation);
+        mToneSeekBar = findViewById(R.id.tone);
+        mBrightnessValue = findViewById(R.id.brightness_value);
+        mContrastValue = findViewById(R.id.contrast_value);
+        mSaturationValue = findViewById(R.id.saturation_value);
+        mToneValue = findViewById(R.id.tone_value);
+        mBrightnessRow = findViewById(R.id.brightness_row);
+        mContrastRow = findViewById(R.id.contrast_row);
+        mSaturationRow = findViewById(R.id.saturation_row);
+        mToneRow = findViewById(R.id.tone_row);
 
-    @Override
-    public String getInputTitle() {
-        return getString(R.string.advance_settings);
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (seekBar == mSeekBarBcshBrightness) {
-            updateBcshValue();
-        } else if (seekBar == mSeekBarBcshContrast) {
-            updateBcshValue();
-        } else if (seekBar == mSeekBarBcshSaturation) {
-            updateBcshValue();
-        } else if (seekBar == mSeekBarBcshTone) {
-            updateBcshValue();
+        for (AppCompatSeekBar seekBar : new AppCompatSeekBar[] {
+                mBrightnessSeekBar, mContrastSeekBar, mSaturationSeekBar, mToneSeekBar }) {
+            seekBar.setMax(100);
+            seekBar.setKeyProgressIncrement(1);
+            seekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
         }
-        Log.i(TAG, "onProgressChanged->progress:" + progress);
+        mBrightnessSeekBar.setOnFocusChangeListener((v, hasFocus) -> mBrightnessRow.setActivated(hasFocus));
+        mContrastSeekBar.setOnFocusChangeListener((v, hasFocus) -> mContrastRow.setActivated(hasFocus));
+        mSaturationSeekBar.setOnFocusChangeListener((v, hasFocus) -> mSaturationRow.setActivated(hasFocus));
+        mToneSeekBar.setOnFocusChangeListener((v, hasFocus) -> mToneRow.setActivated(hasFocus));
+
+        findViewById(R.id.preset_reset).setOnClickListener(this);
+        findViewById(R.id.preset_cold).setOnClickListener(this);
+        findViewById(R.id.preset_warm).setOnClickListener(this);
+        findViewById(R.id.preset_sharp).setOnClickListener(this);
+        findViewById(R.id.advanced_cancel).setOnClickListener(this);
+        findViewById(R.id.advanced_confirm).setOnClickListener(this);
     }
 
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        Log.i(TAG, "onStartTrackingTouch");
+    private final SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            updateValueLabels();
+            if (!mSuppressCallbacks) {
+                applyBcshValues();
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+        }
+    };
+
+    private void loadCurrentValues() {
+        mSuppressCallbacks = true;
+        mOldBcshBrightness = getDisplayValue("getBrightness");
+        mOldBcshContrast = getDisplayValue("getContrast");
+        mOldBcshSaturation = getDisplayValue("getSaturation");
+        mOldBcshTone = getDisplayValue("getHue");
+        mBrightnessSeekBar.setProgress(mOldBcshBrightness);
+        mContrastSeekBar.setProgress(mOldBcshContrast);
+        mSaturationSeekBar.setProgress(mOldBcshSaturation);
+        mToneSeekBar.setProgress(mOldBcshTone);
+        mSuppressCallbacks = false;
     }
 
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        Log.i(TAG, "onStopTrackingTouch");
+    private int getDisplayValue(String method) {
+        if (mRkDisplayManager == null) {
+            return DEFAULT_VALUE;
+        }
+        Object value = ReflectUtils.invokeMethod(mRkDisplayManager, method,
+                new Class[] { int.class }, new Object[] { mDisplayId });
+        return value instanceof Integer ? (Integer) value : DEFAULT_VALUE;
     }
 
-    private void setDefaultBcshValue(int brightness, int contrast, int saturation, int tone) {
-        mSeekBarBcshBrightness.setProgress(brightness);
-        mSeekBarBcshContrast.setProgress(contrast);
-        mSeekBarBcshSaturation.setProgress(saturation);
-        mSeekBarBcshTone.setProgress(tone);
+    private void setDisplayValue(String method, int value) {
+        if (mRkDisplayManager == null) {
+            return;
+        }
+        ReflectUtils.invokeMethod(mRkDisplayManager, method,
+                new Class[] { int.class, int.class }, new Object[] { mDisplayId, value });
+    }
+
+    private void applyBcshValues() {
+        setDisplayValue("setBrightness", mBrightnessSeekBar.getProgress());
+        setDisplayValue("setContrast", mContrastSeekBar.getProgress());
+        setDisplayValue("setSaturation", mSaturationSeekBar.getProgress());
+        setDisplayValue("setHue", mToneSeekBar.getProgress());
+    }
+
+    private void updateValueLabels() {
+        mBrightnessValue.setText(String.valueOf(mBrightnessSeekBar.getProgress()));
+        mContrastValue.setText(String.valueOf(mContrastSeekBar.getProgress()));
+        mSaturationValue.setText(String.valueOf(mSaturationSeekBar.getProgress()));
+        mToneValue.setText(String.valueOf(mToneSeekBar.getProgress()));
+    }
+
+    private void setPresetValues(int brightness, int contrast, int saturation, int tone) {
+        mBrightnessSeekBar.setProgress(brightness);
+        mContrastSeekBar.setProgress(contrast);
+        mSaturationSeekBar.setProgress(saturation);
+        mToneSeekBar.setProgress(tone);
         saveNewValue();
-        updateBcshValue();
         DrmDisplaySetting.saveConfig();
     }
 
-    private void updateBcshValue() {
-        if (isFirstIn)
-            return;
-        if (mIsSupportDRM && mRkDisplayManager != null) {
-            Log.d(TAG, "b:" + mSeekBarBcshBrightness.getProgress() + " c:" + mSeekBarBcshContrast.getProgress() + " s:"
-                    + mSeekBarBcshSaturation.getProgress() + " h:" + mSeekBarBcshTone.getProgress());
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setBrightness", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mSeekBarBcshBrightness.getProgress() });
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setContrast", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mSeekBarBcshContrast.getProgress() });
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setSaturation", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mSeekBarBcshSaturation.getProgress() });
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setHue", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mSeekBarBcshTone.getProgress() });
+    private void recoveryOldValue() {
+        setDisplayValue("setBrightness", mOldBcshBrightness);
+        setDisplayValue("setContrast", mOldBcshContrast);
+        setDisplayValue("setSaturation", mOldBcshSaturation);
+        setDisplayValue("setHue", mOldBcshTone);
+    }
 
-            return;
+    private void saveNewValue() {
+        SharedPreferences bcshPreferences = getSharedPreferences(ConstData.SharedKey.BCSH_VALUES,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = bcshPreferences.edit();
+        editor.putInt(ConstData.SharedKey.BCSH_BRIGHTNESS, mBrightnessSeekBar.getProgress());
+        editor.putInt(ConstData.SharedKey.BCSH_CONTRAST, mContrastSeekBar.getProgress());
+        editor.putInt(ConstData.SharedKey.BCSH_STAURATION, mSaturationSeekBar.getProgress());
+        editor.putInt(ConstData.SharedKey.BCSH_TONE, mToneSeekBar.getProgress());
+        editor.apply();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.advanced_confirm) {
+            saveNewValue();
+            DrmDisplaySetting.saveConfig();
+            finish();
+        } else if (id == R.id.advanced_cancel) {
+            recoveryOldValue();
+            finish();
+        } else if (id == R.id.preset_reset) {
+            setPresetValues(RESET_VALUE, RESET_VALUE, RESET_VALUE, RESET_VALUE);
+        } else if (id == R.id.preset_cold) {
+            setPresetValues(COLD_BRIGHTNESS, COLD_CONTRAST, COLD_SATURATION, COLD_TONE);
+        } else if (id == R.id.preset_warm) {
+            setPresetValues(WARM_BRIGHTNESS, WARM_CONTRAST, WARM_SATURATION, WARM_TONE);
+        } else if (id == R.id.preset_sharp) {
+            setPresetValues(SHARP_BRIGHTNESS, SHARP_CONTRAST, SHARP_SATURATION, SHARP_TONE);
         }
     }
 
@@ -253,104 +222,4 @@ public class AdvancedDisplaySettingsActivity extends BaseInputActivity
         }
         return super.onKeyDown(keyCode, event);
     }
-
-    private void recoveryOldValue() {
-        if (mIsSupportDRM && mRkDisplayManager != null) {
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setBrightness", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mOldBcshBrightness });
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setContrast", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mOldBcshContrast });
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setSaturation", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mOldBcshStauration });
-            ReflectUtils.invokeMethod(mRkDisplayManager, "setHue", new Class[] { int.class, int.class },
-                    new Object[] { mDisplayId, mOldBcshTone });
-            return;
-        }
-    }
-
-    private void saveNewValue() {
-        int brightness = mSeekBarBcshBrightness.getProgress();
-        int contrast = mSeekBarBcshContrast.getProgress();
-        int satuation = mSeekBarBcshSaturation.getProgress();
-        int tone = mSeekBarBcshTone.getProgress();
-        Log.i(TAG,
-                "brightness = " + brightness + "contrast = " + contrast + "satuation = " + satuation + "tone= " + tone);
-
-        SharedPreferences bcshPreferences = getSharedPreferences(ConstData.SharedKey.BCSH_VALUES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = bcshPreferences.edit();
-        editor.putInt(ConstData.SharedKey.BCSH_BRIGHTNESS, mSeekBarBcshBrightness.getProgress());
-        editor.putInt(ConstData.SharedKey.BCSH_CONTRAST, mSeekBarBcshContrast.getProgress());
-        editor.putInt(ConstData.SharedKey.BCSH_STAURATION, mSeekBarBcshSaturation.getProgress());
-        editor.putInt(ConstData.SharedKey.BCSH_TONE, mSeekBarBcshTone.getProgress());
-        editor.commit();
-        saveValueToPreference(ConstData.SharedKey.MAX_BRIGHTNESS, "" + mMaxBrightness);
-        saveValueToPreference(ConstData.SharedKey.MIN_BRIGHTNESS, "" + mMinBrightness);
-        saveValueToPreference(ConstData.SharedKey.BRIGHTNESS, "" + mBrightnessNum);
-        saveValueToPreference(ConstData.SharedKey.STATURATION, "" + mSaturationNum);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v == mBtnCancel) {
-            recoveryOldValue();
-            finish();
-        } else if (v == mBtnOK) {
-            saveNewValue();
-            DrmDisplaySetting.saveConfig();
-            finish();
-        } else if (v == mBtnReset) {
-            if (mIsSupportDRM)
-                setDefaultBcshValue(50, 50, 50, 50);
-            else
-                setDefaultBcshValue(32, 1000, 1000, 30);
-        } else if (v == mBtnCold) {
-            if (mIsSupportDRM)
-                setDefaultBcshValue(50, 50, 30, 31);
-            else
-                setDefaultBcshValue(32, 820, 732, 30);
-        } else if (v == mBtnWarm) {
-            if (mIsSupportDRM)
-                setDefaultBcshValue(67, 53, 80, 74);
-            else
-                setDefaultBcshValue(32, 1278, 1190, 30);
-        } else if (v == mBtnSharp) {
-            if (mIsSupportDRM)
-                setDefaultBcshValue(60, 77, 43, 46);
-            else
-                setDefaultBcshValue(42, 1617, 630, 30);
-        }
-    }
-
-    private String getValueFromPreference(String key) {
-        return getSharedPreferences(ConstData.SharedKey.HDR_VALUES, Context.MODE_PRIVATE).getString(key, "");
-    }
-
-    private void saveValueToPreference(String key, String value) {
-        SharedPreferences sharedPreferences = getSharedPreferences(ConstData.SharedKey.HDR_VALUES,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(key, value);
-        editor.commit();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_base_input_for_advanced_display_settings);
-        baseInit();
-        init();
-        getWindow().getDecorView().getRootView().setBackground(getResources().getDrawable(R.drawable.ramiro));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        isFirstIn = false;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
 }
