@@ -183,6 +183,10 @@ public class DeviceFragment extends SettingsPreferenceFragment implements Prefer
         if (!mIsUseDisplayd) {
             mDisplayInfo = getDisplayInfo();
         }
+        if (mDisplayInfo == null) {
+            Log.w(TAG, "initData: display info is not available");
+            return;
+        }
 
         int fixedToUserRotationMode = getFixedToUserRotation(mDisplayInfo.getDisplayId());
 
@@ -459,11 +463,17 @@ public class DeviceFragment extends SettingsPreferenceFragment implements Prefer
     }
 
     protected DisplayInfo getDisplayInfo() {
-        Intent mIntent = getActivity().getIntent();
-        if(mIntent != null) {
-            mDisplayInfo = (DisplayInfo) mIntent.getSerializableExtra(ConstData.IntentKey.DISPLAY_INFO);
-            Log.d(TAG, "getDisplayInfo mDisplayInfo = " + mDisplayInfo);
+        Bundle args = getArguments();
+        if (args != null) {
+            mDisplayInfo = (DisplayInfo) args.getSerializable(ConstData.IntentKey.DISPLAY_INFO);
         }
+        if (mDisplayInfo == null) {
+            Intent mIntent = getActivity().getIntent();
+            if(mIntent != null) {
+                mDisplayInfo = (DisplayInfo) mIntent.getSerializableExtra(ConstData.IntentKey.DISPLAY_INFO);
+            }
+        }
+        Log.d(TAG, "getDisplayInfo mDisplayInfo = " + mDisplayInfo);
         return mDisplayInfo;
     }
 

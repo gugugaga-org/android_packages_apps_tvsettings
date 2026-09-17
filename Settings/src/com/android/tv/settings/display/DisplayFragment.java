@@ -245,6 +245,12 @@ public class DisplayFragment extends LeanbackPreferenceFragmentCompat
         mDisplayPreference.setOnPreferenceClickListener(this);
         mDisplayPreference.setEnabled(true);
         mDisplayPreference.setSelectable(true);
+        // The two-panel framework instantiates the fragment with the preference
+        // extras as its arguments, so carry the selected display there.  The
+        // activity intent is only updated by onPreferenceClick for the classic
+        // flavor, which does not go through the two-panel navigation.
+        Bundle args = mDisplayPreference.getExtras();
+        args.putSerializable(ConstData.IntentKey.DISPLAY_INFO, mDisplayInfo);
         return mDisplayPreference;
     }
 
