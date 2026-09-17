@@ -261,6 +261,9 @@ public class DisplayFragment extends LeanbackPreferenceFragmentCompat
 
         //filter DisplayInfo for rk3328
         List<DisplayInfo> tempDisplayInfo = DrmDisplaySetting.getDisplayInfoList();
+        if (tempDisplayInfo == null) {
+            tempDisplayInfo = new ArrayList<DisplayInfo>();
+        }
         switch(SystemProperties.get("ro.board.platform", "")) {
             case "rk3328":
                 Optional<DisplayInfo> hdmiDisplayInfo = tempDisplayInfo.stream().filter(display -> display.getType() == DrmDisplaySetting.DRM_MODE_CONNECTOR_HDMIA).findFirst();

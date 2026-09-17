@@ -145,6 +145,10 @@ public class DrmDisplaySetting {
         int mDisplayNumber = getDisplayNumber();
         logd("getDisplayInfoList->mDisplayNumber:" + mDisplayNumber);
         String[] mConnectorInfos = getConnectorInfo();
+        if (mConnectorInfos == null) {
+            logd("getDisplayInfoList->connector info is not available");
+            return displayInfos;
+        }
         for (String mConnectInfo : mConnectorInfos) {
             logd("getDisplayInfoList->mConnectInfo:" + mConnectInfo);
         }

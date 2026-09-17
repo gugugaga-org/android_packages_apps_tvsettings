@@ -29,6 +29,10 @@
         android:key="display_category"
         android:title="@string/display_category_title" />
     <Preference
+        android:key="display_devices"
+        android:title="@string/display_devices"
+        android:fragment="com.android.tv.settings.display.DisplayFragment" />
+    <Preference
         android:key="font_scale"
         android:title="@string/font_scale_settings_title"
         android:fragment="com.android.tv.settings.device.displaysound.FontScalePreferenceFragment" />
