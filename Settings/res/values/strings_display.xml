@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Strings and placeholder arrays for the Rockchip display settings screens.
+  The resolution and color lists are replaced at runtime from the connected
+  display's DRM modes.
+-->
+<resources>
+    <string name="display">Display</string>
+    <string name="resolution">Resolution</string>
+    <string name="color">Color</string>
+    <string name="zoom">Zoom</string>
+    <string name="fixed_rotation">Fixed rotation</string>
+    <string name="hdmi_rotation">Rotation</string>
+    <string name="advance_settings">Advanced setting</string>
+    <string name="ai_display_settings">AI Advanced Display</string>
+    <string name="display_devices">Display devices</string>
+    <string name="ui_resolutions">Ui Resolutions</string>
+    <string name="confirm_dialog_title">Save Confirm</string>
+    <string name="confirm_dialog_message">Will cancel in</string>
+
+    <string name="bcsh_cold">cold</string>
+    <string name="bcsh_reset">reset</string>
+    <string name="bcsh_sharp">sharp</string>
+    <string name="bcsh_warm">warm</string>
+    <string name="brightness">Brightness</string>
+    <string name="contrast">Contrast</string>
+    <string name="saturation">Saturation</string>
+    <string name="tone">Tone</string>
+
+    <string name="ai_svep_mode">SVEP Mode(1/0)</string>
+    <string name="ai_svep_global_ui">Global UI Mode(2/1) </string>
+    <string name="ai_svep_contrast_mode">SVEP Contrast Mode </string>
+    <string name="ai_svep_contrast_mode_summary">Long press MENU to enable SVEP left right split screen debug mode</string>
+    <string name="ai_svep_contrast_ratio">AI Contrast Ratio</string>
+    <string name="ai_svep_enhance_rate">AI Enhancement"</string>
+
+    <string-array name="resolution_list" translatable="false">
+        <item>1920x1080p-60</item>
+        <item>1280x720p-60</item>
+        <item>720x480p-60</item>
+    </string-array>
+
+    <string-array name="color_list" translatable="false">
+        <item>color1</item>
+        <item>color2</item>
+        <item>color3</item>
+    </string-array>
+
+    <string-array name="hdmi_rotation_entries">
+        <item>0</item>
+        <item>90</item>
+        <item>180</item>
+        <item>270</item>
+    </string-array>
+
+    <string-array name="hdmi_rotation_values">
+        <item>0</item>
+        <item>90</item>
+        <item>180</item>
+        <item>270</item>
+    </string-array>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="display_scale_summary">调整画面显示范围，消除黑边或裁切</string>
+    <string name="display_scale_horizontal">水平缩放</string>
+    <string name="display_scale_vertical">垂直缩放</string>
+    <string name="display_scale_reset">重置</string>
+    <string name="display_scale_done">完成</string>
+    <string name="display_scale_value">%1$d%%</string>
+
+    <string name="advanced_display_summary">调整画面亮度、对比度与色彩</string>
+    <string name="advanced_display_preset">预设</string>
+    <string name="advanced_display_cancel">取消</string>
+    <string name="advanced_display_confirm">保存</string>
+</resources>

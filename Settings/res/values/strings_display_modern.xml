@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="display_scale_summary">Adjust the visible picture area to remove black borders or cropping</string>
+    <string name="display_scale_horizontal">Horizontal</string>
+    <string name="display_scale_vertical">Vertical</string>
+    <string name="display_scale_reset">Reset</string>
+    <string name="display_scale_done">Done</string>
+    <string name="display_scale_value">%1$d%%</string>
+
+    <string name="advanced_display_summary">Adjust picture brightness, contrast and color</string>
+    <string name="advanced_display_preset">Presets</string>
+    <string name="advanced_display_cancel">Cancel</string>
+    <string name="advanced_display_confirm">Save</string>
+</resources>
