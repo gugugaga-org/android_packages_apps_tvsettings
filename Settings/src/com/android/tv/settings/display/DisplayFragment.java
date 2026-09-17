@@ -26,7 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.display.DisplayManager;
 import android.os.Bundle;
-import androidx.leanback.preference.LeanbackPreferenceFragmentCompat;
+import com.android.tv.settings.SettingsPreferenceFragment;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -43,7 +43,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class DisplayFragment extends LeanbackPreferenceFragmentCompat
+public class DisplayFragment extends SettingsPreferenceFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TAG = "DisplayFragment";
     private static final String KEY_UI_RESOLUTIONS = "ui_resolutions";

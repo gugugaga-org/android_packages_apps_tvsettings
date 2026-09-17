@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Over-scan (zoom) settings for the Rockchip display device screen.
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/zoom">
+
+    <SeekBarPreference
+        android:key="scale_horizontal"
+        android:max="20"
+        android:title="@string/display_scale_horizontal"
+        app:showSeekBarValue="true" />
+
+    <SeekBarPreference
+        android:key="scale_vertical"
+        android:max="20"
+        android:title="@string/display_scale_vertical"
+        app:showSeekBarValue="true" />
+
+    <Preference
+        android:key="scale_reset"
+        android:title="@string/display_scale_reset" />
+</PreferenceScreen>

@@ -212,6 +212,19 @@ public class DeviceFragment extends SettingsPreferenceFragment implements Prefer
         } else {
             mHDR10Preference.setEnabled(false);
         }
+
+        // The zoom, advanced display and AI display screens live in the
+        // preview panel, so let the two-panel framework navigate to them.
+        // The preference extras become the fragment arguments.
+        Bundle zoomArgs = mZoomPreference.getExtras();
+        zoomArgs.putSerializable(ConstData.IntentKey.DISPLAY_INFO, mDisplayInfo);
+        mZoomPreference.setFragment(ScreenScaleFragment.class.getName());
+
+        Bundle advancedArgs = mAdvancedSettingsPreference.getExtras();
+        advancedArgs.putInt(ConstData.IntentKey.DISPLAY_ID, mDisplayInfo.getDisplayId());
+        mAdvancedSettingsPreference.setFragment(AdvancedDisplayFragment.class.getName());
+
+        mAiDisplaySettingsPreference.setFragment(AIDisplayFragment.class.getName());
     }
 
     protected void rebuildView() {
@@ -261,11 +274,8 @@ public class DeviceFragment extends SettingsPreferenceFragment implements Prefer
         if (mColorPreference != null)
             mColorPreference.setOnPreferenceChangeListener(this);
 
-        mZoomPreference.setOnPreferenceClickListener(this);
         mRotationPreference.setOnPreferenceChangeListener(this);
         mFixedRotationPreference.setOnPreferenceClickListener(this);
-        mAdvancedSettingsPreference.setOnPreferenceClickListener(this);
-        mAiDisplaySettingsPreference.setOnPreferenceClickListener(this);
         mHDR10Preference.setOnPreferenceClickListener(this);
     }
 
@@ -391,25 +401,7 @@ public class DeviceFragment extends SettingsPreferenceFragment implements Prefer
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        if (preference == mZoomPreference) {
-            Intent screenScaleIntent = new Intent(getActivity(), ScreenScaleActivity.class);
-            screenScaleIntent.putExtra(ConstData.IntentKey.PLATFORM, mStrPlatform);
-            screenScaleIntent.putExtra(ConstData.IntentKey.DISPLAY_INFO, mDisplayInfo);
-            startActivity(screenScaleIntent);
-        } else if (preference == mResolutionPreference) {
-            //updateResolutionValue();
-        } else if (preference == mAdvancedSettingsPreference) {
-            Intent advancedIntent = new Intent(getActivity(), AdvancedDisplaySettingsActivity.class);
-            advancedIntent.putExtra(ConstData.IntentKey.DISPLAY_ID, mDisplayInfo.getDisplayId());
-            startActivity(advancedIntent);
-        } else if (preference == mAiDisplaySettingsPreference) {
-            // Intent aiDisplaySettingsIntent = new Intent(getActivity(), ShowDialogService.class);
-            // aiDisplaySettingsIntent.putExtra(ShowDialogService.KEY_DIALOG, ShowDialogService.VALUE_AI_LAB);
-            // getActivity().startService(aiDisplaySettingsIntent);
-            Intent aiDisplaySettingsIntent = new Intent(getActivity(), AIDisplayActivity.class);
-            aiDisplaySettingsIntent.putExtra(KEY_AI_DISPLAY_DIM, true);
-            startActivity(aiDisplaySettingsIntent);
-        } else if (preference == mFixedRotationPreference) {
+        if (preference == mFixedRotationPreference) {
             boolean checked = mFixedRotationPreference.isChecked();
             int displayId = android.view.Display.DEFAULT_DISPLAY;
             try{
