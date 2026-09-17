@@ -1386,6 +1386,24 @@
             android:theme="@style/Theme.Reset"
             android:configChanges="keyboard|keyboardHidden|navigation"
             android:excludeFromRecents="true" />
+        <activity
+            android:name="com.android.tv.settings.display.DisplayActivity"
+            android:theme="@style/Transparent"
+            android:exported="true" />
+        <activity
+            android:name="com.android.tv.settings.display.ScreenScaleActivity"
+            android:theme="@style/TvSettingsActivityTheme"
+            android:exported="false" />
+        <activity
+            android:name="com.android.tv.settings.display.AdvancedDisplaySettingsActivity"
+            android:theme="@style/TvSettingsActivityTheme"
+            android:exported="false" />
+        <activity
+            android:name="com.android.tv.settings.display.AIDisplayActivity"
+            android:theme="@style/TvSettingsActivityTheme"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true"
+            android:exported="true" />
 
         <receiver
             android:name=".GlobalKeyReceiver"

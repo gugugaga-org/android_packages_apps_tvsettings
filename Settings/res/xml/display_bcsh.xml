@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BCSH (brightness/contrast/saturation/tone) settings for the Rockchip
+  display device screen.
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/advance_settings">
+
+    <SeekBarPreference
+        android:key="bcsh_brightness"
+        android:max="100"
+        android:title="@string/brightness"
+        app:showSeekBarValue="true" />
+
+    <SeekBarPreference
+        android:key="bcsh_contrast"
+        android:max="100"
+        android:title="@string/contrast"
+        app:showSeekBarValue="true" />
+
+    <SeekBarPreference
+        android:key="bcsh_saturation"
+        android:max="100"
+        android:title="@string/saturation"
+        app:showSeekBarValue="true" />
+
+    <SeekBarPreference
+        android:key="bcsh_tone"
+        android:max="100"
+        android:title="@string/tone"
+        app:showSeekBarValue="true" />
+
+    <Preference
+        android:key="bcsh_preset_reset"
+        android:title="@string/bcsh_reset" />
+
+    <Preference
+        android:key="bcsh_preset_cold"
+        android:title="@string/bcsh_cold" />
+
+    <Preference
+        android:key="bcsh_preset_warm"
+        android:title="@string/bcsh_warm" />
+
+    <Preference
+        android:key="bcsh_preset_sharp"
+        android:title="@string/bcsh_sharp" />
+</PreferenceScreen>

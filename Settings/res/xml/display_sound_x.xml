@@ -28,6 +28,10 @@
     <PreferenceCategory
         android:key="display_category"
         android:title="@string/display_category_title" />
+    <Preference
+        android:key="display_devices"
+        android:title="@string/display_devices"
+        android:fragment="com.android.tv.settings.display.DisplayFragment" />
     <com.android.tv.twopanelsettings.slices.EmbeddedSlicePreference
         android:key="display_resolution"
         android:fragment="com.android.tv.twopanelsettings.slices.SliceFragment"
