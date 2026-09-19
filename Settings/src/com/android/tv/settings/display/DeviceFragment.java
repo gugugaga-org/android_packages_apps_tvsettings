@@ -381,14 +381,15 @@ public class DeviceFragment extends SettingsPreferenceFragment implements Prefer
             try {
                 int value = Integer.parseInt((String) obj);
                 Log.d(TAG,"freezeDisplayRotation~~~value:"+(String) obj);
+                final String caller = getContext().getPackageName();
                 if(value == 0)
-                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_0);
+                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_0, caller);
                 else if(value == 90)
-                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_90);
+                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_90, caller);
                 else if(value == 180)
-                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_180);
+                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_180, caller);
                 else if(value == 270)
-                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_270);
+                    wm.freezeDisplayRotation(mDisplayInfo.getDisplayId(), Surface.ROTATION_270, caller);
                 else
                     return true;
                 android.os.SystemProperties.set("sys.boot_completed", "1");
